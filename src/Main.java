@@ -58,7 +58,7 @@ public class Main {
                     gestion.resolverIncidencia(idIncC);
                     break;
                 case 5:
-                    Reporte.generarReporteEstado(gestion.getHistorial());
+                    Reporte.generarReporteEstadoLaboratorio(gestion);
                     break;
                 case 6:
                     System.out.println("Saliendo...");

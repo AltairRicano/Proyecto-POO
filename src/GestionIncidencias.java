@@ -76,10 +76,29 @@ public class GestionIncidencias {
 
     // RF06: Resolver incidencia
     public void resolverIncidencia(int idIncidencia) {
-        Incidencia inc = buscarIncidencia(idIncidencia);
-        if (inc != null) {
-            inc.resolverIncidencia();
-            System.out.println("Incidencia #" + idIncidencia + " marcada como TERMINADA. Equipo activo.");
+        Incidencia incidenciaActual = buscarIncidencia(idIncidencia);
+
+        if (incidenciaActual != null) {
+            // 1. Cerramos la incidencia (cambia estado a TERMINADO)
+            incidenciaActual.resolverIncidencia();
+
+            // 2. Verificamos si el equipo tiene OTRAS cuentas pendientes
+            EquipoComputo equipoAfectado = incidenciaActual.getEquipo();
+
+            boolean tieneOtrasPendientes = historialIncidencias.stream()
+                    .anyMatch(i -> i.getEquipo().equals(equipoAfectado)
+                            && i.getEstado() != EstadoIncidencia.TERMINADO);
+
+            // 3. Decidimos el estado del equipo
+            if (!tieneOtrasPendientes) {
+                equipoAfectado.setEstado(EstadoEquipo.ACTIVO);
+                System.out.println(">> Incidencia #" + idIncidencia + " cerrada. El equipo " + equipoAfectado.getIdEquipo() + " está ACTIVO nuevamente.");
+            } else {
+                System.out.println(">> Incidencia #" + idIncidencia + " cerrada.");
+                System.out.println("   ¡ATENCIÓN! El equipo sigue en MANTENIMIENTO porque tiene otras fallas pendientes.");
+            }
+        } else {
+            System.out.println(">> ERROR: No se encontró ninguna incidencia con el ID: " + idIncidencia);
         }
     }
 

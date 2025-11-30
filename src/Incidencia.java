@@ -39,7 +39,6 @@ public class Incidencia {
 
     public void resolverIncidencia() {
         this.estado = EstadoIncidencia.TERMINADO;
-        this.equipo.setEstado(EstadoEquipo.ACTIVO);
     }
 
     // Getters
