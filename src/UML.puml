@@ -1,8 +1,8 @@
 @startuml
-' Configuración visual
+' Configuración visual para que sea limpio
 skinparam classAttributeIconSize 0
 
-' --- HERENCIA ---
+' --- HERENCIA (Persona es la clase padre) ---
 Persona <|-- Alumno
 Persona <|-- PersonalAcademico
 Persona <|-- Tecnico
@@ -16,10 +16,10 @@ Incidencia "*" --> "1" EquipoComputo : afecta a >
 Incidencia "*" --> "1" Persona : reportada por >
 Incidencia "*" --> "0..1" Tecnico : asignada a >
 
-' CORRECCIÓN: Aquí está la conexión que faltaba
+' Reporte depende de GestionIncidencias para leer el inventario
 Reporte ..> GestionIncidencias : usa >
 
-' Relaciones con Enums
+' Dependencias a Enums
 Incidencia ..> TipoFalla
 Incidencia ..> Prioridad
 Incidencia ..> EstadoIncidencia
@@ -27,6 +27,7 @@ EquipoComputo ..> EstadoEquipo
 PersonalAcademico ..> RolAcademico
 
 ' --- CLASES ---
+
 abstract class Persona {
     #String id
     #String nombre
@@ -77,12 +78,13 @@ class GestionIncidencias {
     +reportarIncidencia()
     +asignarTecnicoAutomaticamente()
     +cambiarPrioridad()
-    +resolverIncidencia()
-    +buscarIncidenciaActivaPorEquipo(): Incidencia
+    +resolverIncidencia(int)
+    +buscarIncidenciaActivaPorEquipo(String): Incidencia
     +getInventario(): List<EquipoComputo>
 }
 
 class Reporte {
+    ' Método actualizado para recibir el Gestor completo
     +{static} generarReporteEstadoLaboratorio(GestionIncidencias)
 }
 
@@ -116,4 +118,5 @@ enum RolAcademico {
     PROFESOR
     DIRECTIVO
 }
+
 @enduml
