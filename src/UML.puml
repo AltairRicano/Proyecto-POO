@@ -1,0 +1,119 @@
+@startuml
+' Configuración visual
+skinparam classAttributeIconSize 0
+
+' --- HERENCIA ---
+Persona <|-- Alumno
+Persona <|-- PersonalAcademico
+Persona <|-- Tecnico
+
+' --- RELACIONES ---
+GestionIncidencias "1" o-- "*" Incidencia : gestiona >
+GestionIncidencias o-- "*" Tecnico : tiene lista >
+GestionIncidencias o-- "*" EquipoComputo : tiene inventario >
+
+Incidencia "*" --> "1" EquipoComputo : afecta a >
+Incidencia "*" --> "1" Persona : reportada por >
+Incidencia "*" --> "0..1" Tecnico : asignada a >
+
+' CORRECCIÓN: Aquí está la conexión que faltaba
+Reporte ..> GestionIncidencias : usa >
+
+' Relaciones con Enums
+Incidencia ..> TipoFalla
+Incidencia ..> Prioridad
+Incidencia ..> EstadoIncidencia
+EquipoComputo ..> EstadoEquipo
+PersonalAcademico ..> RolAcademico
+
+' --- CLASES ---
+abstract class Persona {
+    #String id
+    #String nombre
+    +Persona(String, String)
+    +getNombre(): String
+    +getId(): String
+}
+
+class Alumno {
+    -String matricula
+    +Alumno(String, String, String)
+}
+
+class PersonalAcademico {
+    -RolAcademico rol
+    +PersonalAcademico(String, String, RolAcademico)
+}
+
+class Tecnico {
+    -List<Incidencia> incidenciasAsignadas
+    +asignarIncidencia(Incidencia)
+    +getCargaTrabajo(): int
+    +getIncidenciasAsignadas(): List<Incidencia>
+}
+
+class EquipoComputo {
+    -String idEquipo
+    -EstadoEquipo estado
+    +EquipoComputo(String)
+    +setEstado(EstadoEquipo)
+    +getEstado(): EstadoEquipo
+}
+
+class Incidencia {
+    -int id
+    -String descripcion
+    -LocalDateTime fechaReporte
+    -TipoFalla tipoFalla
+    -Prioridad prioridad
+    -EstadoIncidencia estado
+    +setPrioridad(Prioridad)
+    +setTecnico(Tecnico)
+    +resolverIncidencia()
+}
+
+class GestionIncidencias {
+    -List<Incidencia> historialIncidencias
+    +reportarIncidencia()
+    +asignarTecnicoAutomaticamente()
+    +cambiarPrioridad()
+    +resolverIncidencia()
+    +buscarIncidenciaActivaPorEquipo(): Incidencia
+    +getInventario(): List<EquipoComputo>
+}
+
+class Reporte {
+    +{static} generarReporteEstadoLaboratorio(GestionIncidencias)
+}
+
+' --- ENUMS ---
+enum TipoFalla {
+    HARDWARE
+    SOFTWARE
+    RED
+}
+
+enum EstadoEquipo {
+    ACTIVO
+    MANTENIMIENTO
+    INACTIVO
+}
+
+enum Prioridad {
+    URGENTE
+    ALTA
+    MEDIA
+    BAJA
+}
+
+enum EstadoIncidencia {
+    PENDIENTE
+    EN_PROCESO
+    TERMINADO
+}
+
+enum RolAcademico {
+    PROFESOR
+    DIRECTIVO
+}
+@enduml
